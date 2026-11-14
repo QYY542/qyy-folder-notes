@@ -24,6 +24,8 @@ class FolderNotesHelper extends Plugin {
     this.disposed = false;
     this.windows = new Set();
     this.revision = 0;
+    this.fileMenus = new QYYFileMenuActions(this);
+    this.fileMenus.start();
     this.addSettingTab(new HelperSettings(this.app, this));
     this.addCommand({ id: 'toggle-helper', name: '开启或关闭文件夹笔记助手_QYY',
       callback: () => this.change('enabled', !this.settings.enabled) });
@@ -70,6 +72,7 @@ class FolderNotesHelper extends Plugin {
     };
   }
   syncAppearance(settings) {
+    this.fileMenus?.refresh();
     for (const win of this.windows) {
       if (win.closed) { this.windows.delete(win); continue; }
       win.document.body?.classList.toggle('folder-note-underline', !!settings.underlineFolder);
@@ -180,6 +183,7 @@ class FolderNotesHelper extends Plugin {
     this.sync?.dispose();
     this.trash?.dispose();
     this.conflicts?.dispose();
+    this.fileMenus?.dispose();
     this.revision++;
     // Embedded component unloads with its owner; keep saved preferences intact.
   }

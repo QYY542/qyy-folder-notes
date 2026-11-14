@@ -347,3 +347,9 @@ body.fn-hide-collapse-icon.only-has-folder-note:not(.is-collapsed):not(.show-fol
         display: block;
     }
 }
+
+/* Folder rows keep a normal pointer while helper navigation is enabled. */
+body.folder-notes-plugin.qyy-folder-arrow-cursor .workspace-leaf-content[data-type="file-explorer"] .nav-folder-title,
+body.folder-notes-plugin.qyy-folder-arrow-cursor .workspace-leaf-content[data-type="file-explorer"] .nav-folder-title * {
+    cursor: default;
+}

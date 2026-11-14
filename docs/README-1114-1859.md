@@ -116,3 +116,17 @@ Automatic startup, periodic, edit-triggered and mobile foreground sync do not sh
 The public mobile-compatible helper supports Save and sync, but does not intercept application exit. Mobile operating systems may suspend background work; unfinished work resumes on a later sync. Mobile module loading and lifecycle behavior are tested with mocks; this release has not been tested on a physical phone.
 
 公开助手支持“保存并同步”，不拦截退出。手机系统可能暂停后台运行，未完成任务留待后续同步重试。本次验证包含手机模块加载与生命周期模拟，尚未进行手机实机测试。
+
+## Folder menus on desktop and mobile / 文件夹菜单
+
+Right-click a Markdown note on desktop, or long-press it in the mobile file list. **新建笔记** (New note) and **新建白板** (New canvas) are placed first. Choosing either turns an ordinary note into a same-name folder note, keeps its content, and creates an empty child note or canvas. Existing folder notes reuse their parent folder. After creation the folder expands and the new child opens. The normal arrow cursor is used on desktop folder rows.
+
+The menu hides New folder and New base; file menus also hide the Folder note actions submenu. Other ways to create folders or bases remain available. These adjustments follow the helper and folder-feature switches; disable the helper to restore standard menus. Menu label filtering supports Chinese and English.
+
+桌面右键或手机长按笔记，“新建笔记”“新建白板”置顶。点击后将普通笔记转为同名文件夹笔记，保留原正文，并在其中创建空白子笔记或白板；已有文件夹笔记会复用当前文件夹。新建后展开目录并打开新内容。文件夹行使用普通箭头光标。
+
+右键隐藏“新建文件夹”“新建数据库”，文件菜单隐藏“文件夹笔记操作”。这不影响通过其他入口创建文件夹或数据库。关闭助手或文件夹功能即可恢复标准菜单。目前支持中英文菜单项识别。
+
+Conversion requires folder notes stored inside their folders. A same-name destination collision stops conversion without overwriting existing files. Open notes are saved first; a save failure prevents conversion. New notes remain blank and new canvases contain no nodes or edges. This release does not require an update to QYY Baidu Sync 1.3.3.
+
+转换要求文件夹笔记存储于文件夹内；遇到同名目标时停止，避免覆盖。操作前保存打开的笔记，保存失败则不转换。手机长按菜单、保存与展开逻辑经过模拟测试，尚未进行手机实机验证。

@@ -1,0 +1,35 @@
+const fs=require('fs'),assert=require('assert/strict');
+const {webcrypto}=require('crypto');class Base{}
+const ob=new Proxy({Platform:{isMobile:true,isDesktopApp:false},Plugin:Base,Notice:Base},{get:(o,k)=>o[k]||Base}),m={exports:{}};
+const {QYYFileMenuActions}=new Function('require','module','exports','crypto',fs.readFileSync(require('path').join(__dirname,'../main.js'),'utf8')+';return {QYYFileMenuActions}')(name=>{assert.equal(name,'obsidian');return ob},m,m.exports,webcrypto);
+let count=0;async function test(name,fn){await fn();count++;console.log('PASS',name)}
+function setup(){
+ const files=new Map(),texts=new Map(),opened=[],expanded=[];const root={path:'',name:'',children:[]};files.set('',root);
+ const parent=p=>files.get(p.includes('/')?p.slice(0,p.lastIndexOf('/')):'');
+ function put(path,content='',folder=false){const parts=path.split('/'),name=parts.at(-1),f={path,name,parent:parent(path),...(folder?{children:[]}:{extension:name.split('.').at(-1),basename:name.replace(/\.[^.]+$/,'')})};files.set(path,f);f.parent?.children.push(f);if(!folder)texts.set(f,content);return f;}
+ const core={saveSettings:async()=>{},settings:{storageLocation:'insideFolder'}},items={};let saveFailed=false,renameFailed=false;
+ const vault={getAbstractFileByPath:p=>files.get(p),read:async f=>texts.get(f),createFolder:async p=>{assert(!files.has(p));assert(core.qyyConflictFolders.has(p));return put(p,'',true)},create:async(p,s)=>{assert(!files.has(p));assert(core.qyyConflictFolders.has(p),'automatic folder creation is guarded, including vault root');return put(p,s)},process:async(f,fn)=>texts.set(f,fn(texts.get(f))),getAvailablePath:(b,e)=>{let p=b+'.'+e,n=1;while(files.has(p))p=b+' '+n+++'.'+e;return p}};
+ const app={vault,workspace:{setActiveLeaf(){},getLeavesOfType:()=>[{view:{fileItems:items}}],getLeaf:()=>({openFile:async f=>opened.push(f)})},nextFrame:fn=>fn(),fileManager:{renameFile:async(f,p)=>{if(renameFailed)throw Error('rename failed');assert(!files.has(p));files.delete(f.path);f.parent.children=f.parent.children.filter(x=>x!==f);f.path=p;f.parent=parent(p);f.parent.children.push(f);files.set(p,f)}}};
+ const host={app,windows:new Set(),settings:{enabled:true,folderEnabled:true},native:()=>core,sync:{saveOpenNotes:async()=>{if(saveFailed)throw Error('save failed')}}};
+ const a=new QYYFileMenuActions(host);
+ const addItem=(p)=>items[p]={collapsed:true,toggleCollapsed:value=>{items[p].collapsed=value;expanded.push(p)}};
+ return {a,host,files,texts,put,root,opened,expanded,addItem,core,failSave:()=>saveFailed=true,failRename:()=>renameFailed=true};
+}
+function menu(titles){return {items:titles.map(title=>({title,dom:{remove(){}}})),sections:['title','open','action'],sort(){this.items.sort((a,b)=>this.sections.indexOf(a.section||'action')-this.sections.indexOf(b.section||'action'))},addItem(fn){const item={setTitle(x){this.title=x;return this},setIcon(){return this},setSection(x){this.section=x;return this},onClick(x){this.callback=x;return this}};fn(item);this.items.push(item)}}}
+(async()=>{
+await test('note menu puts two actions first and hides folder/base/submenu actions',()=>{const h=setup(),f=h.put('note.md'),m=menu(['打开','新建数据库','新建文件夹','文件夹笔记操作']);h.a.attach(m,f);m.sort();assert.deepEqual(m.items.map(x=>x.title),['新建笔记','新建白板','打开']);});
+await test('folder menu keeps folder-note controls and removes duplicate creation entries',()=>{const h=setup(),f=h.put('folder','',true),m=menu(['新建笔记','新建白板','新建文件夹','新建数据库','文件夹笔记操作']);h.a.attach(m,f);m.sort();assert.deepEqual(m.items.map(x=>x.title),['新建笔记','新建白板','文件夹笔记操作']);});
+await test('late providers are filtered before menu display',()=>{const h=setup(),f=h.put('note.md'),m=menu([]);h.a.attach(m,f);m.items.push({title:'New base'},{title:'New folder'});m.sort();assert.equal(m.items.length,2);});
+await test('disabled helper leaves menus alone',()=>{const h=setup();h.host.settings.enabled=false;const m=menu(['新建文件夹']);h.a.attach(m,h.put('a.md'));m.sort();assert.equal(m.items[0].title,'新建文件夹');});
+await test('attachments never gain note conversion actions',()=>{const h=setup(),m=menu(['打开']);h.a.attach(m,h.put('image.png'));m.sort();assert.deepEqual(m.items.map(x=>x.title),['打开']);});
+for(const ext of ['md','canvas'])await test('convert note preserving body and create blank '+ext,async()=>{const h=setup(),f=h.put('原文.md','Hello\n![图](images/a.png)');h.addItem('原文');const {folder,child}=await h.a.create(f,ext);assert.equal(folder.path,'原文');assert.equal(f.path,'原文/原文.md');assert.equal(h.texts.get(f),'Hello\n![图](../images/a.png)');assert.equal(child.extension,ext);assert.equal(h.texts.get(child),ext==='md'?'':'{"nodes":[],"edges":[]}');assert.equal(h.opened.at(-1),child);assert(h.expanded.includes('原文'));assert.equal(h.core.qyyConflictFolders.size,0)});
+await test('existing folder note reuses parent without nested folder',async()=>{const h=setup();h.put('主题','',true);const f=h.put('主题/主题.md','KEEP');await h.a.create(f,'md');assert(!h.files.has('主题/主题'));assert.equal(h.texts.get(f),'KEEP');});
+await test('folder creation opens and expands folder and ancestors',async()=>{const h=setup();h.put('父','',true);const f=h.put('父/子','',true);h.addItem('父');h.addItem('父/子');const r=await h.a.create(f,'md');assert.deepEqual(h.expanded,['父/子','父']);assert.equal(h.opened.at(-1),r.child)});
+await test('same-name destination collision preserves all original content',async()=>{const h=setup(),f=h.put('同名.md','ORIGINAL');h.put('同名','',true);h.put('同名/同名.md','EXISTING');await assert.rejects(h.a.create(f,'md'),/同名/);assert.equal(h.texts.get(f),'ORIGINAL');assert.equal(h.files.size,4);});
+await test('save failure performs no conversion or creation',async()=>{const h=setup(),f=h.put('原文.md','KEEP');h.failSave();await assert.rejects(h.a.create(f,'md'));assert.equal(f.path,'原文.md');assert.equal(h.files.size,2);});
+await test('rename failure retains original and releases conversion guard',async()=>{const h=setup(),f=h.put('原文.md','KEEP');h.failRename();await assert.rejects(h.a.create(f,'md'));assert.equal(f.path,'原文.md');assert.equal(h.texts.get(f),'KEEP');assert.equal(h.core.qyyConflictFolders.size,0)});
+await test('two rapid actions serialize conversion and create unique siblings',async()=>{const h=setup(),f=h.put('原文.md','KEEP');const [a,b]=await Promise.all([h.a.create(f,'md'),h.a.create(f,'md')]);assert.equal(a.folder,b.folder);assert.notEqual(a.child.path,b.child.path);assert.equal(h.texts.get(f),'KEEP')});
+await test('active conflict prevents an overlapping conversion',async()=>{const h=setup(),f=h.put('原文.md','KEEP');h.core.qyyConflictFolders=new Set(['原文']);await assert.rejects(h.a.create(f,'md'),/其他操作/);assert.equal(f.path,'原文.md')});
+await test('vault-root menu creates a blank child without a spurious folder',async()=>{const h=setup();const {folder,child}=await h.a.create(h.root,'md');assert.equal(folder,h.root);assert.equal(child.parent,h.root);assert(!h.files.has('undefined'));assert.equal(h.core.qyyConflictFolders.size,0)});
+console.log('PASS '+count+' menu and data preservation checks');
+})().catch(e=>{console.error(e);process.exit(1)});

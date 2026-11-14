@@ -5729,6 +5729,7 @@ var Commands = class {
   fileCommands() {
     this.plugin.registerEvent(this.app.workspace.on("file-menu", (menu, file) => {
       var _a, _b, _c;
+      if (file instanceof import_obsidian40.TFile && this.plugin.qyySimplifiedMenus) return;
       let folder = file.parent;
       if (file instanceof import_obsidian40.TFile) {
         if (this.plugin.settings.storageLocation === "insideFolder") {

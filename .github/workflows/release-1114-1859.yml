@@ -71,4 +71,4 @@ jobs:
         run: |
           gh release create "$RELEASE_TAG" main.js manifest.json styles.css \
             --verify-tag --title "QYY Folder Notes $RELEASE_TAG" \
-            --notes-file docs/release-notes-1114-1828.md --latest
+            --notes-file docs/release-notes-1114-1859.md --latest
