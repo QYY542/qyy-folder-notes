@@ -28,3 +28,10 @@ The paste-repair module processes text/HTML supplied by a user paste event, or b
 Converted text is inserted into the note. Saving or syncing that note through separately configured services can transmit its contents. HTML image and link destinations remain part of the pasted Markdown; normal Obsidian rendering can load remote images. “Local conversion” does not mean pasted content can never leave the device.
 
 粘贴修复只处理用户这次粘贴或明确执行粘贴命令所提供的数据，不主动读取或轮询系统剪贴板，不记录剪贴板内容，不发送网络请求，不扫描知识库。转换后的内容成为普通笔记；之后保存、同步笔记或显示远程图片时，其他已配置功能可能传输这些内容。关闭插件会还原适配方法和样式。
+
+
+## Existing icon metadata / 本地图标元数据
+
+The optional picker reads the installed Iconic plugin's `main.js` through the vault adapter to extract its static emoji name/id data array. It never evaluates that source, reads Iconic credentials/settings, scans notes, or makes a network request for this feature. Parsed names/ids are cached in memory and released when the helper unloads. Obsidian's existing icon registry supplies line icons. No downloaded image cache or duplicate catalogue file is written.
+
+图标选择器只读取已安装 Iconic 的程序文件中的静态表情数据，不执行源码，不读取该插件设置或凭据，不扫描笔记，不下载图标包。名称和 ID 只缓存在内存，卸载时释放；复用已有图形资源。

@@ -157,17 +157,14 @@ With the separately installed Iconic, “紧凑图标选择器” shrinks sparse
 另行安装 Iconic 后，可开启“紧凑图标选择器”：结果少时不再固定占满六行，无结果时显示搜索提示，手机保持足够大的点按区域。此功能不更改所选图标和 Iconic 配置。公开版未捆绑 Twemoji 图形包。
 
 
-### Icon picker defaults (0.1.6) / 图标选择器默认候选
+### Full icon catalogue / 完整图标库（0.1.8）
 
-With optional Iconic 1.1.11 installed, an empty search now offers 24 common emoji and 12 line icons, respecting the picker’s active modes. Typing uses Iconic’s original search; selecting and saving remain native. The compact grid uses at least 44 px touch targets on mobile. Turn off **常用图标与紧凑选择器** to restore Iconic’s original layout and empty-search behavior.
+With optional Iconic 1.1.11 installed, an empty search browses the **existing full emoji catalogue and Obsidian's Lucide icons**, with common choices first. The tested desktop installation has 1,932 emoji and 1,935 line icons; exact totals depend on installed versions. Previous/next buttons show page and result counts, with up to 24 items rendered at once. Typing continues to use Iconic's native search.
 
-安装 Iconic 后，搜索为空时显示常用候选，不再只显示当前图标。输入关键词后继续原生搜索；保存、颜色和触摸操作仍由 Iconic 处理。此公开版不包含 Twemoji 图库，表情外观取决于系统或已有的图标渲染组件。
+No additional image pack is bundled or downloaded. The helper reads only the static emoji data array from the installed Iconic `main.js`, parses it as data without executing source, and caches the compact name/id catalogue in memory. Lucide icons come from Obsidian's existing registry. This optional adapter does not modify Iconic files or its icon assignments.
 
-This optional adapter uses Iconic’s current search component interface. Future Iconic versions may need compatibility checks; it never edits Iconic’s installed files. Desktop and mobile browser behavior are tested, but no physical phone was tested. See [recovery notes](docs/ICON-PICKER-RECOVERY-1115-0016.md).
+空搜索现在可以翻页查看完整目录，不再限制为 36 个常用候选。复用 Iconic 已有表情与 Obsidian 线条图标，不下载重复图片包；关键词搜索、颜色和保存仍交给 Iconic。设置开关为 **完整图标库与紧凑选择器**。
 
+When an existing compatible QYY Twemoji renderer is active, candidates without a local image are omitted instead of showing unsupported glyphs. The tested Twemoji 17.0.3 installation covers 1,923 of Iconic's 1,932 emoji, giving 3,858 visible choices with line icons. This public package does not include that renderer or its assets; otherwise system emoji are used.
 
-### Pagination (0.1.7) / 图标翻页
-
-The Iconic picker now has **上一页 / 下一页** (previous / next), a page number and result count. Empty searches browse the common palette; typed queries page through all matches supplied by Iconic, rather than only the first visible batch. Pages hold up to 24 results, respecting Iconic's configured per-page limit. Changing the query or modes resets to page one. Edge buttons are disabled, empty results display a hint, and mobile buttons are at least 44 px high.
-
-选择器底部新增上一页／下一页、页码和总数。空搜索浏览常用候选，输入关键词后可逐页查看原生搜索匹配；不会把常用候选误当作完整图标库。关闭助手选项可还原。
+如果未来 Iconic 改变内部元数据格式，助手安全退回常用表情，并在结果栏明确提示；线条图标仍可浏览。关闭选项可还原原生搜索行为与布局。桌面实测及手机浏览器模拟通过，真实手机未测试。维护方法见 [恢复说明](docs/ICON-PICKER-RECOVERY-1115-0025.md)。
