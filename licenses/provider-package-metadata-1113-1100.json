@@ -1,0 +1,22 @@
+{
+  "name": "front-matter-plugin-api-provider",
+  "version": "0.1.4-alpha",
+  "license": "ISC",
+  "author": {
+    "name": "snezhig"
+  },
+  "gitHead": "57b15ac86ce2965e66e1434734d064fed28709e3",
+  "dist": {
+    "shasum": "6f30ec3e0059d8f55bd591656605973e1ab49c7c",
+    "tarball": "https://registry.npmjs.org/front-matter-plugin-api-provider/-/front-matter-plugin-api-provider-0.1.4-alpha.tgz",
+    "fileCount": 17,
+    "integrity": "sha512-amv+xSnxY1VUCtNu1y+mr2QZSDBAktiaP67G1CF6LOYnW11fctTKro75rAzDEjW5EkdDwnM5PvJjBHB+IMSYzw==",
+    "signatures": [
+      {
+        "sig": "MEUCIQCaQHuReTry0I6Vv/q7O5REcZNchPvB0CVkuyWSB2RtJQIgCfOQf3Zjy59UyqlffoYsF7Iq4CGXdJGg9nMjaIukAQ8=",
+        "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"
+      }
+    ],
+    "unpackedSize": 54073
+  }
+}

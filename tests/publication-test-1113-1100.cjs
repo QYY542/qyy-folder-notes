@@ -1,0 +1,23 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),{webcrypto}=require('node:crypto');
+const root=path.resolve(__dirname,'..'),source=fs.readFileSync(path.join(root,'main.js'),'utf8');
+const notices=[],imports=[];let checks=0;
+class Base{}
+const ob=new Proxy({Platform:{isMobile:true,isDesktopApp:false},Notice:class{constructor(t){notices.push(t)}}},{get:(o,k)=>o[k]||Base});
+const m={exports:{}};
+const lib=new Function('require','module','exports','crypto',source+'\nreturn {FolderNotesHelper,SyncAssistant,SyncedTrash,qyyTrashRoot,DEFAULTS};')(n=>{imports.push(n);assert.equal(n,'obsidian');return ob},m,m.exports,webcrypto);
+function test(name,fn){return Promise.resolve().then(fn).then(()=>{console.log('PASS',name);checks++})}
+(async()=>{
+await test('public mobile entry loads without desktop modules or dependency installer',()=>{assert(imports.length);assert.equal(typeof m.exports,'function');assert.equal(m.exports.prototype.installBundledSync,undefined);assert.equal(lib.SyncAssistant.prototype.attachDesktop,undefined);assert.equal(lib.SyncAssistant.prototype.runExit,undefined)});
+await test('cleanup is explicit opt-in and paths are vault-relative',()=>{assert.equal(lib.DEFAULTS.trashEnabled,false);assert.equal(lib.DEFAULTS.trashAutoClean,false);assert.equal(lib.DEFAULTS.trashRoot,'QYY废纸篓');for(const s of ['/tmp/trash','../notes','a/../b','.obsidian/cache','a/.hidden','a\\b','a//b'])assert.throws(()=>lib.qyyTrashRoot(s));assert.equal(lib.qyyTrashRoot('资料/废纸篓'),'资料/废纸篓')});
+await test('custom trash location consistently addresses records and payloads',()=>{const t=new lib.SyncedTrash({app:{vault:{adapter:{}}},settings:{trashRoot:'资料/回收'}});assert.equal(t.entriesRoot,'资料/回收/回收项目');assert.equal(t.receiptsRoot,'资料/回收/处理记录');assert(t.contains('资料/回收/回收项目/a'));assert(!t.contains('QYY废纸篓/a'));assert(!t.contains('资料/回收之外/a'))});
+await test('changing an unused root persists once; existing history is never moved',async()=>{let saved=0;const dirs=new Set(),h=Object.create(lib.FolderNotesHelper.prototype);h.settings={trashRoot:'QYY废纸篓',trashEnabled:false};h.app={vault:{adapter:{exists:async p=>dirs.has(p)}}};h.sync={native:()=>null};h.trash=new lib.SyncedTrash(h);h.persist=async()=>saved++;await h.setTrashRoot('档案/回收');assert.equal(saved,1);assert.equal(h.trash.receiptsRoot,'档案/回收/处理记录');dirs.add('档案/回收');await assert.rejects(h.setTrashRoot('另一个回收站'),/原废纸篓/);assert.equal(h.settings.trashRoot,'档案/回收');h.settings.trashEnabled=true;await assert.rejects(h.setTrashRoot('另一个回收站'),/关闭同步废纸篓/)});
+await test('existing Folder notes is detected without disabling or moving it',async()=>{let writes=0;const h=Object.create(lib.FolderNotesHelper.prototype);h.manifest={dir:'.obsidian/plugins/qyy-folder-notes'};h.app={vault:{adapter:{write:()=>writes++,rename:()=>writes++}},plugins:{plugins:{'folder-notes':{}},disablePluginAndSave:()=>writes++}};await assert.rejects(h.startEmbeddedCore(),/手动关闭/);assert.equal(writes,0)});
+function syncHost(run){
+ const plugin={settings:{accessToken:'synthetic'},engine:{qyyInit(){},startSync:run}};
+ return {manifest:{id:'qyy-folder-notes'},settings:{enabled:true,syncEnabled:true,maxWaitSeconds:15},app:{loadLocalStorage:()=>null,saveLocalStorage(){},plugins:{plugins:{'qyy-baidu-sync':plugin}}}};
+}
+await test('failed local save prevents network sync',async()=>{let network=0;const host=syncHost(async()=>{network++;return {success:true}});const s=new lib.SyncAssistant(host);s.saveOpenNotes=async()=>{throw Error('disk unavailable')};await s.runForeground(true);assert.equal(network,0);assert.equal(s.lastAttempt.status,'local-save-failed')});
+await test('save and sync records success only after save and transfer complete',async()=>{const events=[];const host=syncHost(async()=>{events.push('sync');return {success:true,stats:{errors:0}}});const s=new lib.SyncAssistant(host);s.saveOpenNotes=async()=>events.push('save');await s.runForeground(true);assert.deepEqual(events,['save','sync']);assert.equal(s.lastAttempt.status,'complete')});
+await test('standard installer assets suffice and metadata discloses upstream source',()=>{const mf=JSON.parse(fs.readFileSync(path.join(root,'manifest.json')));assert.equal(mf.id,'qyy-folder-notes');assert.equal(mf.author,'QYY');assert.equal(mf.isDesktopOnly,false);assert(!source.includes('quit-gate-'));assert(!source.includes('baidu-sync-main-'));assert(!source.includes('remote.require'));assert(fs.readFileSync(path.join(root,'LICENSE'),'utf8').includes('AFFERO'));assert(fs.readFileSync(path.join(root,'THIRD-PARTY-NOTICES'),'utf8').includes('Lost Paul'))});
+console.log('PASS '+checks+' public helper checks');
+})().catch(e=>{console.error(e);process.exit(1)});

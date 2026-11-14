@@ -1,0 +1,8 @@
+{
+  "snapshotDate": "2026-11-13",
+  "upstreamRepository": "https://github.com/LostPaul/obsidian-folder-notes",
+  "upstreamRelease": "1.8.26",
+  "form": "Readable JavaScript source snapshot derived from upstream release, with QYY modifications maintained in separate modules; not a from-scratch implementation.",
+  "localInputSha256": "dccf08f31abb8fd308be3473d569d1122a168286322fd58662ad8aaf236291e4",
+  "directoryForkPermission": "not requested; user deferred contact"
+}

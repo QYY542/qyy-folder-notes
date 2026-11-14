@@ -1,0 +1,8 @@
+QYY public candidate, 2026-11-13
+
+Lost Paul — Folder notes 1.8.26, AGPL v3.
+https://github.com/LostPaul/obsidian-folder-notes
+
+Includes the upstream folder overview code and front-matter-plugin-api-provider; provider declares ISC in its package metadata. The package does not include a standalone LICENSE; the declaration and the standard ISC text are retained under licenses/ for final review.
+
+Copyright in the original code remains with its respective authors. QYY is responsible for the added integration and modifications. No upstream endorsement or directory publication permission is claimed.

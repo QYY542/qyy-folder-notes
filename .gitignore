@@ -1,0 +1,6 @@
+node_modules/
+.test-output/
+.DS_Store
+data.json
+sync_manifest.json
+.env
