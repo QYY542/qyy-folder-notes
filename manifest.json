@@ -1,7 +1,7 @@
 {
   "id": "qyy-folder-notes",
   "name": "QYY Folder Notes",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "minAppVersion": "1.15.0",
   "description": "创建空白文件夹笔记，保存冲突版本，并管理可同步的废纸篓.",
   "author": "QYY",

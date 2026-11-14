@@ -15,7 +15,7 @@ class SyncAssistant {
   start() {
     this.refresh();
     if (this.active() && this.lastAttempt && !this.lastAttempt.success) {
-      new Notice('本设备上次同步未确认完成，请先同步成功再切换设备编辑。', 12000);
+      console.warn('QYY Folder Notes：上次同步未确认完成；记录已保留，可手动同步重试。');
     }
     if (Platform.isMobile) {
       this.host.registerDomEvent(document, 'visibilitychange', () => {
@@ -58,7 +58,7 @@ class SyncAssistant {
     const timer = setTimeout(() => {
       try { this.record('timeout'); } catch (_) {}
       controller.abort();
-      new Notice('同步等待已超时，已停止等待；底层传输可能仍在继续，请查看百度同步状态。', 10000);
+      if (manual) new Notice('同步等待已超时，已停止等待；底层传输可能仍在继续，请查看百度同步状态。', 10000);
     }, this.settings.maxWaitSeconds * 1000);
     try {
       this.record('pending');
@@ -69,11 +69,11 @@ class SyncAssistant {
       if (!this.active()) return;
       const success = result?.success === true && !(result.stats?.errors > 0);
       this.record(success ? 'complete' : 'failed', { stats: result?.stats });
-      if (manual || !success) new Notice(success ? '同步完成。' : '同步未完成，请查看百度网盘同步状态。', 8000);
+      if (manual) new Notice(success ? '同步完成。' : '同步未完成，请查看百度网盘同步状态。', 8000);
     } catch (_) {
       if (!controller.signal.aborted && this.active()) {
         try { this.record(saved ? 'failed' : 'local-save-failed'); } catch (_) {}
-        new Notice(saved ? '同步失败，请稍后重试。' : '本地保存失败，请先检查笔记。', 10000);
+        if (manual) new Notice(saved ? '同步失败，请稍后重试。' : '本地保存失败，请先检查笔记。', 10000);
       }
     } finally {
       clearTimeout(timer);

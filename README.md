@@ -106,3 +106,13 @@ gh attestation verify manifest.json --repo QYY542/qyy-folder-notes
 维护者 QYY。内置 Folder notes 来源于 Lost Paul / LostPaul，保留 GNU AGPL v3 许可及原作者贡献；其他嵌入组件见 [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES)。当前维护可读的上游发行 JavaScript 衍生快照与新增模块，不是从零原创。源码来源见 `source-provenance-1113-1100.json`。
 
 Maintained by QYY, derived from Lost Paul's Folder notes under the included AGPL license. Upstream credit is retained. See [LICENSE](LICENSE) and [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES). Community fork permission, review and actual device validation are tracked separately in [RELEASE-CHECKLIST.md](RELEASE-CHECKLIST.md).
+
+## Quiet automatic sync / 自动同步静默
+
+Automatic startup, periodic, edit-triggered and mobile foreground sync do not show popup notifications. Failures and pending work remain recorded; check the sync log and use a manual sync before switching devices. Manual sync keeps its notifications. Update both QYY Baidu Sync (1.3.3+) and QYY Folder Notes (0.1.3+) when using them together.
+
+启动、定时、保存后及手机返回前台的自动同步不弹窗。失败、待同步和冲突记录仍保留；切换设备前可查看同步日志并手动确认同步成功。手动同步继续显示提示。搭配使用时请同时更新百度同步至 1.3.3 或以上、文件夹助手至 0.1.3 或以上。
+
+The public mobile-compatible helper supports Save and sync, but does not intercept application exit. Mobile operating systems may suspend background work; unfinished work resumes on a later sync. Mobile module loading and lifecycle behavior are tested with mocks; this release has not been tested on a physical phone.
+
+公开助手支持“保存并同步”，不拦截退出。手机系统可能暂停后台运行，未完成任务留待后续同步重试。本次验证包含手机模块加载与生命周期模拟，尚未进行手机实机测试。

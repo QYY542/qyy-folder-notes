@@ -36,7 +36,7 @@ class ConflictFolders {
  async mkdir(p){let part='';for(const name of p.split('/')){part=qyyJoin(part,name);if(!await this.a.exists(part))try{await this.a.mkdir(part)}catch(e){if(!await this.a.exists(part))throw e;}}}
  async save(r){await this.mkdir(this.root);await this.a.write(this.root+'/'+r.id+'.json',JSON.stringify(r,null,2));this.records.set(r.id,r);}
  async load(){if(!await this.a.exists(this.root))return;for(const p of (await this.a.list(this.root)).files.filter(x=>x.endsWith('.json'))){const r=JSON.parse(await this.a.read(p));if(r.schema!==1||!/^冲突-[a-f0-9]{24}$/.test(r.id)||!qyySafe(r.path))throw Error('冲突处理记录异常，已停止自动处理');this.records.set(r.id,r);}}
- start(){this.ready=this.load().then(()=>this.attach());this.ready.catch(e=>new Notice(e.message));this.timer=setInterval(()=>this.attach(),3000);}
+ start(){this.ready=this.load().then(()=>this.attach());this.ready.catch(()=>console.error('QYY Folder Notes：冲突处理初始化失败，已停止自动处理，请检查同步状态。'));this.timer=setInterval(()=>this.attach(),3000);}
  attach(){const e=this.host.sync.native()?.engine;if(!e||this.engine===e)return;this.detach();this.engine=e;
   const resolve=(...args)=>this.enqueue(async()=>{await this.ready;return this.resolve(e,...args)});
   const before=item=>this.beforeDelete(e,item),phase=item=>item.action==='UPLOAD'&&[...this.records.values()].some(r=>r.oldPath===item.path&&r.status!=='pending');
@@ -56,7 +56,7 @@ class ConflictFolders {
   let winner=r?.choice;
   if(!winner&&trusted&&Math.abs(local.modifiedAt-remote.modifiedAt)>Math.max(2000,local.uncertainty+remote.uncertainty))winner=local.modifiedAt>remote.modifiedAt?'local':'remote';
   if(!r){r={schema:1,id,path:item.path,createdAt:Date.now(),status:'pending',local,remote:remote||null,localHash,remoteHash};await this.mkdir(this.root);await this.a.writeBinary(this.root+'/'+id+'-本地.bin',localBytes);await this.a.writeBinary(this.root+'/'+id+'-云端.bin',remoteBytes);await this.save(r);}
-  if(!winner){e.qyyInit().waitingConflicts||={};e.qyyInit().waitingConflicts[item.path]=true;delete e.qyyInit().outbox[item.path];await e.qyyPersist();if(!this.notified?.has(id)){this.notified||=new Set();this.notified.add(id);new Notice('有一篇笔记的修改时间无法可靠比较。请在文件夹笔记助手中“处理待确认冲突”，选择主版本。',10000);}throw Error('冲突已保留双方原文，等待选择主版本：'+item.path);}
+  if(!winner){e.qyyInit().waitingConflicts||={};e.qyyInit().waitingConflicts[item.path]=true;delete e.qyyInit().outbox[item.path];await e.qyyPersist();if(e.qyyInit().notifySync===true&&!this.notified?.has(id)){this.notified||=new Set();this.notified.add(id);new Notice('有一篇笔记的修改时间无法可靠比较。请在文件夹笔记助手中“处理待确认冲突”，选择主版本。',10000);}throw Error('冲突已保留双方原文，等待选择主版本：'+item.path);}
   if(e.qyyInit().waitingConflicts)delete e.qyyInit().waitingConflicts[item.path];
   const latestBytes=winner==='local'?localBytes:remoteBytes,olderBytes=winner==='local'?remoteBytes:localBytes,latestVersion=winner==='local'?local:remote,olderVersion=winner==='local'?remote:local;
   const name=item.path.split('/').pop().replace(/\.md$/i,''),parent=qyyParent(item.path),alreadyFolderNote=parent.split('/').pop()===name;
@@ -80,7 +80,7 @@ class ConflictFolders {
   e.manifest.set({...(item.manifest||{}),path:item.path,remotePath:item.remotePath,mtime:-1,size:localBytes.byteLength,remoteMtime:item.remote.mtime,remoteSize:item.remote.size,md5:item.remote.md5,fsId:item.remote.fsId,localHash:remoteHash});
   if(item.path!==mainPath)e.qyyInit().moves[item.path]={to:mainPath,sequence:e.qyyInit().sequence+1};
   for(const p of [mainPath,oldPath,item.path])e.markDirty(p);await e.manifest.save();await e.qyyPersist();r.status='created';await this.save(r);item.qyyFolderHandled=true;
-  new Notice('已将最新版本设为文件夹笔记，旧版本保存在文件夹内：'+folder);return true;
+  if(e.qyyInit().notifySync===true)new Notice('已将最新版本设为文件夹笔记，旧版本保存在文件夹内：'+folder);return true;
  }
  async recoverPrepared(e){
   let changed=false;
