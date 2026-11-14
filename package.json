@@ -1,6 +1,6 @@
 {
   "name": "qyy-folder-notes",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "private": true,
   "license": "AGPL-3.0-only",
   "author": "QYY",
@@ -8,8 +8,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "node scripts/build-1115-0010.cjs",
-    "test": "node tests/run-1115-0010.cjs"
+    "build": "node scripts/build-1115-0016.cjs",
+    "test": "node tests/run-1115-0016.cjs"
   },
   "packageManager": "npm@11.6.2"
 }

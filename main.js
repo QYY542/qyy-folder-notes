@@ -9041,6 +9041,11 @@ const css = `
  min-height: 44px;
 }
 .iconic-icon-picker .iconic-search-results.qyy-icon-picker-empty { display: none; }
+.iconic-icon-picker .qyy-icon-picker-pagination { display:flex; gap:12px; align-items:center; justify-content:center; padding-block:8px; flex-wrap:wrap; }
+.iconic-icon-picker .qyy-icon-picker-pagination[hidden] { display:none; }
+.iconic-icon-picker .qyy-icon-picker-pagination button { min-height:32px; }
+.is-mobile .iconic-icon-picker .qyy-icon-picker-pagination button { min-height:44px; }
+.iconic-icon-picker .qyy-icon-picker-pagination span { color:var(--text-muted); font-size:var(--font-ui-small); }
 .iconic-icon-picker .qyy-icon-picker-hint { color: var(--text-muted); font-size: var(--font-ui-small); padding: 12px 0; }
 `;
 
@@ -9063,6 +9068,7 @@ class QYYIconicCandidates {
   if(this.fields.has(field)||!field.inputEl?.closest('.iconic-icon-picker')||typeof field.dispatchResults!=='function'||typeof field.setModes!=='function')return;
   const owner=this,original=field.dispatchResults,descriptor=Object.getOwnPropertyDescriptor(field,'dispatchResults');
   const wrapper=function(...args){
+   owner.wrapCallback(this,entry);
    if(owner.owner.active()&&!String(this.getValue()).trim()&&typeof this.searchCallback==='function'){
     const choices=[];
     if(this.emojiMode)choices.push(...emojiChoices);
@@ -9073,10 +9079,41 @@ class QYYIconicCandidates {
    }
    return original.apply(this,args);
   };
-  field.dispatchResults=wrapper;this.fields.set(field,{original,wrapper,descriptor});
+  const entry={original,wrapper,descriptor,page:0,records:[],bar:null,originalCallback:null,callbackWrapper:null};
+  field.dispatchResults=wrapper;this.fields.set(field,entry);
  }
+
+ wrapCallback(field,entry){
+  if(typeof field.searchCallback!=='function'||field.searchCallback===entry.callbackWrapper)return;
+  entry.originalCallback=field.searchCallback;
+  const owner=this;
+  entry.callbackWrapper=function(query,records){
+   if(!owner.owner.active()){owner.removeBar(entry);return entry.originalCallback.call(this,query,records);}
+   entry.query=query;entry.records=Array.isArray(records)?records:[];entry.page=0;
+   owner.render(field,entry);
+  };
+  field.searchCallback=entry.callbackWrapper;
+ }
+ pageSize(){const limit=Number(this.owner.host.app.plugins?.plugins?.iconic?.settings?.maxSearchResults);return Number.isFinite(limit)&&limit>=10?Math.min(24,Math.floor(limit)):24;}
+ render(field,entry){
+  const size=this.pageSize(),pages=Math.max(1,Math.ceil(entry.records.length/size));entry.page=Math.max(0,Math.min(entry.page,pages-1));
+  entry.originalCallback.call(field,entry.query,entry.records.slice(entry.page*size,(entry.page+1)*size));
+  const modal=field.inputEl?.closest('.iconic-icon-picker'),grid=modal?.querySelector('.iconic-search-results');if(!grid)return;
+  grid.scrollTop=0;
+  if(!entry.bar){
+   const doc=grid.ownerDocument,bar=doc.createElement('div'),prev=doc.createElement('button'),next=doc.createElement('button'),status=doc.createElement('span');
+   bar.className='qyy-icon-picker-pagination';bar.setAttribute('role','group');bar.setAttribute('aria-label','图标翻页');
+   prev.type=next.type='button';prev.textContent='上一页';next.textContent='下一页';status.setAttribute('aria-live','polite');
+   prev.addEventListener('click',()=>{if(entry.page>0){entry.page--;this.render(field,entry);}});
+   next.addEventListener('click',()=>{if((entry.page+1)*this.pageSize()<entry.records.length){entry.page++;this.render(field,entry);}});
+   bar.append(prev,status,next);grid.after(bar);Object.assign(entry,{bar,prev,next,status});
+  }
+  entry.bar.hidden=entry.records.length===0;entry.prev.disabled=entry.page===0;entry.next.disabled=entry.page>=pages-1;
+  entry.status.textContent=(entry.page+1)+' / '+pages+' · 共 '+entry.records.length+' 个';
+ }
+ removeBar(entry){entry.bar?.remove();entry.bar=entry.prev=entry.next=entry.status=null;}
  refresh(){this.prune();for(const field of this.fields.keys())if(!String(field.getValue()).trim())field.dispatchResults();}
- release(field,entry){if(field.dispatchResults===entry.wrapper){if(entry.descriptor)Object.defineProperty(field,'dispatchResults',entry.descriptor);else delete field.dispatchResults;}this.fields.delete(field);}
+ release(field,entry){this.removeBar(entry);if(field.searchCallback===entry.callbackWrapper)field.searchCallback=entry.originalCallback;if(field.dispatchResults===entry.wrapper){if(entry.descriptor)Object.defineProperty(field,'dispatchResults',entry.descriptor);else delete field.dispatchResults;}this.fields.delete(field);}
  prune(){for(const [field,entry]of this.fields)if(!field.inputEl?.isConnected)this.release(field,entry);}
  dispose(){
   if(this.proto?.onChange===this.wrapper){if(this.descriptor)Object.defineProperty(this.proto,'onChange',this.descriptor);else delete this.proto.onChange;}
@@ -9105,7 +9142,7 @@ class QYYIconPickerPresentation {
   this.host.app.workspace.iterateAllLeaves(l=>{if(l.view?.containerEl)docs.add(l.view.containerEl.ownerDocument);});
   for(const doc of docs){
    if(!this.documents.has(doc)){
-    const style=doc.createElement('style');style.dataset.qyyIconPicker='1115-0010';style.textContent=css;doc.head.appendChild(style);
+    const style=doc.createElement('style');style.dataset.qyyIconPicker='1115-0016';style.textContent=css;doc.head.appendChild(style);
     const observer=new doc.defaultView.MutationObserver(records=>{
      if(!this.active()||this.queued)return;
      const relevant=records.some(r=>r.target.closest?.('.iconic-icon-picker')||[...r.addedNodes].some(n=>n.matches?.('.iconic-icon-picker')||n.querySelector?.('.iconic-icon-picker'))||[...r.removedNodes].some(n=>n.matches?.('.modal-container,.iconic-icon-picker')));
@@ -9126,5 +9163,5 @@ const load=FolderNotesHelper.prototype.onload,unload=FolderNotesHelper.prototype
 FolderNotesHelper.prototype.onload=async function(){await load.call(this);this.iconPickerPresentation=new QYYIconPickerPresentation(this);this.iconPickerPresentation.start();};
 FolderNotesHelper.prototype.onunload=function(){this.iconPickerPresentation?.dispose();return unload.call(this);};
 FolderNotesHelper.prototype.change=async function(k,v){await change.call(this,k,v);if(k==='enabled'||k==='iconPickerCompactEnabled'){this.iconPickerPresentation?.scan();this.iconPickerPresentation?.candidates.refresh();}};
-HelperSettings.prototype.display=function(){display.call(this);new Setting(this.containerEl).setName('常用图标与紧凑选择器').setDesc('搜索为空时显示常用表情与图标，结果区按内容收缩；手机点按区域至少 44px。').addToggle(t=>t.setValue(this.plugin.settings.iconPickerCompactEnabled!==false).onChange(v=>this.plugin.change('iconPickerCompactEnabled',v)));};
+HelperSettings.prototype.display=function(){display.call(this);new Setting(this.containerEl).setName('常用图标与紧凑选择器').setDesc('空搜索显示常用候选，搜索结果支持上一页／下一页；手机按钮至少 44px。').addToggle(t=>t.setValue(this.plugin.settings.iconPickerCompactEnabled!==false).onChange(v=>this.plugin.change('iconPickerCompactEnabled',v)));};
 })();

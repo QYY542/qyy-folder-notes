@@ -163,4 +163,11 @@ With optional Iconic 1.1.11 installed, an empty search now offers 24 common emoj
 
 安装 Iconic 后，搜索为空时显示常用候选，不再只显示当前图标。输入关键词后继续原生搜索；保存、颜色和触摸操作仍由 Iconic 处理。此公开版不包含 Twemoji 图库，表情外观取决于系统或已有的图标渲染组件。
 
-This optional adapter uses Iconic’s current search component interface. Future Iconic versions may need compatibility checks; it never edits Iconic’s installed files. Desktop and mobile browser behavior are tested, but no physical phone was tested. See [recovery notes](docs/ICON-PICKER-RECOVERY-1115-0010.md).
+This optional adapter uses Iconic’s current search component interface. Future Iconic versions may need compatibility checks; it never edits Iconic’s installed files. Desktop and mobile browser behavior are tested, but no physical phone was tested. See [recovery notes](docs/ICON-PICKER-RECOVERY-1115-0016.md).
+
+
+### Pagination (0.1.7) / 图标翻页
+
+The Iconic picker now has **上一页 / 下一页** (previous / next), a page number and result count. Empty searches browse the common palette; typed queries page through all matches supplied by Iconic, rather than only the first visible batch. Pages hold up to 24 results, respecting Iconic's configured per-page limit. Changing the query or modes resets to page one. Edge buttons are disabled, empty results display a hint, and mobile buttons are at least 44 px high.
+
+选择器底部新增上一页／下一页、页码和总数。空搜索浏览常用候选，输入关键词后可逐页查看原生搜索匹配；不会把常用候选误当作完整图标库。关闭助手选项可还原。
