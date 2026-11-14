@@ -155,3 +155,12 @@ See [recovery and maintenance instructions](docs/PASTE-RECOVERY-1114-2349.md). T
 With the separately installed Iconic, “紧凑图标选择器” shrinks sparse result lists, replaces the empty placeholder with a search hint, and preserves at least 44 px touch targets on mobile. It changes presentation only: search, selection, icon assignments and installed Iconic files remain under Iconic's control. Disable this setting to restore the original layout. This public package does not bundle Twemoji; emoji graphics depend on your chosen renderer and the operating system.
 
 另行安装 Iconic 后，可开启“紧凑图标选择器”：结果少时不再固定占满六行，无结果时显示搜索提示，手机保持足够大的点按区域。此功能不更改所选图标和 Iconic 配置。公开版未捆绑 Twemoji 图形包。
+
+
+### Icon picker defaults (0.1.6) / 图标选择器默认候选
+
+With optional Iconic 1.1.11 installed, an empty search now offers 24 common emoji and 12 line icons, respecting the picker’s active modes. Typing uses Iconic’s original search; selecting and saving remain native. The compact grid uses at least 44 px touch targets on mobile. Turn off **常用图标与紧凑选择器** to restore Iconic’s original layout and empty-search behavior.
+
+安装 Iconic 后，搜索为空时显示常用候选，不再只显示当前图标。输入关键词后继续原生搜索；保存、颜色和触摸操作仍由 Iconic 处理。此公开版不包含 Twemoji 图库，表情外观取决于系统或已有的图标渲染组件。
+
+This optional adapter uses Iconic’s current search component interface. Future Iconic versions may need compatibility checks; it never edits Iconic’s installed files. Desktop and mobile browser behavior are tested, but no physical phone was tested. See [recovery notes](docs/ICON-PICKER-RECOVERY-1115-0010.md).
