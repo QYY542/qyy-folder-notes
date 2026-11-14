@@ -1,4 +1,4 @@
-# 文件夹笔记助手_QYY
+# QYY Folder Notes
 
 把文件夹作为可打开的笔记入口，保留空白正文，并提供冲突版本整理和可同步废纸篓。
 
@@ -53,7 +53,7 @@ npm run build
 npm test
 ```
 
-构建产物位于仓库根目录：`main.js`、`manifest.json`、`styles.css`。`project-1114-1649.json` 声明源码拼接顺序和构建资源；`src/` 中的带时间后缀文件是可编辑源码。构建不会联网、自动安装插件或生成登录凭据。
+构建产物位于仓库根目录：`main.js`、`manifest.json`、`styles.css`。`project-1114-1705.json` 声明源码拼接顺序和构建资源；`src/` 中的带时间后缀文件是可编辑源码。构建不会联网、自动安装插件或生成登录凭据。
 
 标准文件名是 Obsidian、GitHub 和 npm 的约定，不能加时间后缀；源码、文档源稿和检查报告均保留本次后缀。
 

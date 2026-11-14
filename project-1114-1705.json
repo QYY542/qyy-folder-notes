@@ -1,0 +1,32 @@
+{
+  "sources": [
+    "src/folder-core-1113-1100.js",
+    "src/helper-1113-1100.js",
+    "src/sync-assistant-1113-1100.js",
+    "src/synced-trash-1113-1100.js",
+    "src/conflict-folders-1113-1100.js",
+    "src/core-integration-1113-1100.js"
+  ],
+  "assets": {
+    "licenses/LICENSE-1113-1100.txt": "LICENSE",
+    "docs/README-1114-1705.md": "README.md",
+    "docs/THIRD-PARTY-NOTICES-1113-1100.txt": "THIRD-PARTY-NOTICES",
+    "docs/PRIVACY-1113-1100.md": "PRIVACY.md",
+    "docs/RELEASE-CHECKLIST-1114-1649.md": "RELEASE-CHECKLIST.md",
+    "src/styles-1113-1100.css": "styles.css"
+  },
+  "manifest": {
+    "id": "qyy-folder-notes",
+    "name": "QYY Folder Notes",
+    "version": "0.1.1",
+    "minAppVersion": "1.15.0",
+    "description": "创建空白文件夹笔记，保存冲突版本，并管理可同步的废纸篓.",
+    "author": "QYY",
+    "authorUrl": "https://github.com/QYY542",
+    "isDesktopOnly": false
+  },
+  "versions": {
+    "0.1.0": "1.15.0",
+    "0.1.1": "1.15.0"
+  }
+}
