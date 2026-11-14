@@ -14,17 +14,17 @@
     display: flex;
 }
 
-.pointer-cursor,
-.has-folder-note .nav-folder-title-content:hover,
-.has-folder-note.view-header-breadcrumb:hover,
-.nav-folder-collapse-indicator:hover,
-.fn-delete-confirmation-modal-buttons span:hover,
-.fn-delete-confirmation-modal-buttons input:hover {
-    cursor: pointer !important;
+body.folder-notes-plugin .pointer-cursor,
+body.folder-notes-plugin .has-folder-note .nav-folder-title-content:hover,
+body.folder-notes-plugin .has-folder-note.view-header-breadcrumb:hover,
+body.folder-notes-plugin .nav-folder-collapse-indicator:hover,
+body.folder-notes-plugin .fn-delete-confirmation-modal-buttons span:hover,
+body.folder-notes-plugin .fn-delete-confirmation-modal-buttons input:hover {
+    cursor: pointer;
 }
 
-.hide-folder-note :not(.show-folder-note-in-explorer):not(.fn-has-attachment-folder).only-has-folder-note .nav-folder-children {
-    display: none !important;
+body.folder-notes-plugin.hide-folder-note :not(.show-folder-note-in-explorer):not(.fn-has-attachment-folder).only-has-folder-note .nav-folder-children {
+    display: none;
 }
 
 
@@ -48,28 +48,28 @@ body:not(.disable-folder-highlight) .tree-item-self.fn-is-active {
    Exclude Folder Settings
    ========================================================================== */
 
-.fn-excluded-folder-heading {
-    margin-top: 0 !important;
+body.folder-notes-plugin .fn-excluded-folder-heading {
+    margin-top: 0;
     border-top: 1px solid var(--background-modifier-border);
 }
 
-.add-exclude-folder-item,
-.fn-exclude-folder-list {
-    padding-bottom: 0 !important;
+body.folder-notes-plugin .add-exclude-folder-item,
+body.folder-notes-plugin .fn-exclude-folder-list {
+    padding-bottom: 0;
 }
 
-.fn-exclude-folder-list.setting-item {
-    border-top: 0 !important;
-    border-bottom: 0 !important;
+body.folder-notes-plugin .fn-exclude-folder-list.setting-item {
+    border-top: 0;
+    border-bottom: 0;
 }
 
-.fn-exclude-folder-list .setting-item-control {
+body.folder-notes-plugin .fn-exclude-folder-list .setting-item-control {
     display: flex;
-    justify-content: flex-start !important;
+    justify-content: flex-start;
 }
 
-.fn-exclude-folder-list .setting-item-info {
-    display: none !important;
+body.folder-notes-plugin .fn-exclude-folder-list .setting-item-info {
+    display: none;
 }
 
 .fn-exclude-folder-list .search-input-container {
@@ -91,9 +91,9 @@ body:not(.disable-folder-highlight) .tree-item-self.fn-is-active {
     padding-bottom: 0;
 }
 
-.fn-confirmation-modal .setting-item {
-    border-top: 0 !important;
-    padding-top: 0 !important;
+body.folder-notes-plugin .fn-confirmation-modal .setting-item {
+    border-top: 0;
+    padding-top: 0;
 }
 
 :not(.is-phone) .fn-confirmation-modal-button {
@@ -133,21 +133,17 @@ body:not(.disable-folder-highlight) .tree-item-self.fn-is-active {
     display: none;
 }
 
-.cm-line:has(.fv-link-list-item),
-li:has(.fv-link-list-item),
-.el-ul:has(.fv-link-list-item),
-.cm-line:has(.fv-link-list-start),
-.cm-line:has(.fv-link-list-end),
-.fv-hide-overview {
-    display: none !important;
+body.folder-notes-plugin .qyy-fv-hidden,
+body.folder-notes-plugin .fv-hide-overview {
+    display: none;
 }
 
 
-.folder-overview-list {
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    padding-bottom: 1.200 !important;
-    padding-top: 1.200 !important;
+body.folder-notes-plugin .folder-overview-list {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    padding-top: 0;
 }
 
 .folder-overview-list-item {
@@ -158,8 +154,8 @@ li:has(.fv-link-list-item),
     color: var(--text-faint);
 }
 
-.folder-list::marker {
-    color: var(--text-normal) !important;
+body.folder-notes-plugin .folder-list::marker {
+    color: var(--text-normal);
 }
 
 .folder-overview-grid {
@@ -181,8 +177,8 @@ li:has(.fv-link-list-item),
     flex: 1;
 }
 
-.folder-overview-grid-item-article a {
-    text-decoration: none !important;
+body.folder-notes-plugin .folder-overview-grid-item-article a {
+    text-decoration: none;
 }
 
 .folder-overview-grid-item-article h1 {
@@ -204,18 +200,12 @@ li:has(.fv-link-list-item),
    File Explorer & Path Styling
    ========================================================================== */
 
-.folder-note-underline .has-folder-note .nav-folder-title-content {
-    text-decoration-line: underline;
-    text-decoration-color: var(--text-faint);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 1px;
+body.folder-notes-plugin.folder-note-underline .has-folder-note .nav-folder-title-content {
+    box-shadow: inset 0 -2px 0 var(--text-faint);
 }
 
-.folder-note-underline-path .has-folder-note.view-header-breadcrumb {
-    text-decoration-line: underline;
-    text-decoration-color: var(--text-faint);
-    text-decoration-thickness: 1px;
-    text-underline-offset: 2px;
+body.folder-notes-plugin.folder-note-underline-path .has-folder-note.view-header-breadcrumb {
+    box-shadow: inset 0 -1px 0 var(--text-faint);
 }
 
 .folder-note-bold .has-folder-note .nav-folder-title-content,
@@ -235,15 +225,15 @@ li:has(.fv-link-list-item),
 
 /* Collapse Icon Handling */
 
-.fn-folder-overview-collapse-icon {
-    display: block !important;
+body.folder-notes-plugin .fn-folder-overview-collapse-icon {
+    display: block;
 }
 
-.fn-has-no-files .collapse-icon,
-.fn-hide-collapse-icon .has-folder-note.only-has-folder-note .tree-item-icon,
-body.fn-hide-collapse-icon.fn-ignore-attachment-folder .only-has-folder-note .fn-empty-folder.fn-has-attachment-folder .tree-item-icon,
-body.fn-hide-collapse-icon .only-has-folder-note .fn-empty-folder:not(.fn-has-attachment-folder) .tree-item-icon,
-body.fn-hide-empty-collapse-icon :not(.only-has-folder-note) > .fn-empty-folder:not(.fn-has-attachment-folder) .tree-item-icon,
+.fn-has-no-files .collapse-icon:not(.fn-folder-overview-collapse-icon),
+.fn-hide-collapse-icon .has-folder-note.only-has-folder-note .tree-item-icon:not(.fn-folder-overview-collapse-icon),
+body.fn-hide-collapse-icon.fn-ignore-attachment-folder .only-has-folder-note .fn-empty-folder.fn-has-attachment-folder .tree-item-icon:not(.fn-folder-overview-collapse-icon),
+body.fn-hide-collapse-icon .only-has-folder-note .fn-empty-folder:not(.fn-has-attachment-folder) .tree-item-icon:not(.fn-folder-overview-collapse-icon),
+body.fn-hide-empty-collapse-icon :not(.only-has-folder-note) > .fn-empty-folder:not(.fn-has-attachment-folder) .tree-item-icon:not(.fn-folder-overview-collapse-icon),
 body.fn-hide-collapse-icon.only-has-folder-note:not(.is-collapsed):not(.show-folder-note-in-explorer)>.nav-folder-children {
     display: none;
 }

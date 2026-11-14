@@ -1,0 +1,14 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.resolve(__dirname, '..');
+const read = name => JSON.parse(fs.readFileSync(path.join(root, name), 'utf8'));
+const manifest = read('manifest.json'), pkg = read('package.json'), lock = read('package-lock.json');
+assert.match(manifest.version, /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/);
+assert.equal(pkg.version, manifest.version);
+assert.equal(lock.version, manifest.version);
+assert.equal(lock.packages[''].version, manifest.version);
+assert.equal(read('versions.json')[manifest.version], manifest.minAppVersion);
+if (process.env.GITHUB_REF_TYPE === 'tag') assert.equal(process.env.GITHUB_REF_NAME, manifest.version);
+for (const file of ['main.js', 'manifest.json', 'styles.css']) assert(fs.statSync(path.join(root, file)).size > 0);
+console.log('Version, lockfile, tag and artifact checks passed');

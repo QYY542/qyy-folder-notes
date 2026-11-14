@@ -3187,16 +3187,7 @@ async function updateAllOverviews(plugin) {
         return;
       }
       if ((sourceFolder == null ? void 0 : sourceFolder.path) === "/") {
-        const rootFiles = [];
-        plugin.app.vault.getAllLoadedFiles().filter((f) => {
-          var _a;
-          return ((_a = f.parent) == null ? void 0 : _a.path) === "/";
-        }).forEach((f) => {
-          if (!f.path.includes("/")) {
-            rootFiles.push(f);
-          }
-        });
-        files = rootFiles;
+        files = sourceFolder.children.filter((file) => !file.path.includes("/"));
       } else if (sourceFolder instanceof import_obsidian27.TFolder) {
         files = sourceFolder.children;
       }
@@ -4236,16 +4227,7 @@ var FolderOverview = class {
   }
   getInitialFiles(plugin, sourceFolder) {
     if ((sourceFolder == null ? void 0 : sourceFolder.path) === "/") {
-      const rootFiles = [];
-      plugin.app.vault.getAllLoadedFiles().filter((f) => {
-        var _a;
-        return ((_a = f.parent) == null ? void 0 : _a.path) === "/";
-      }).forEach((file) => {
-        if (!file.path.includes("/")) {
-          rootFiles.push(file);
-        }
-      });
-      return rootFiles;
+      return sourceFolder.children.filter((file) => !file.path.includes("/"));
     } else if (sourceFolder instanceof import_obsidian32.TFolder) {
       return sourceFolder.children;
     }

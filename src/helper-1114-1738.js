@@ -16,6 +16,7 @@ class FolderNotesHelper extends Plugin {
     if (![5, 10, 15].includes(this.settings.maxWaitSeconds)) this.settings.maxWaitSeconds = 15;
     await this.startEmbeddedCore();
     if(!this.settings.enabled||!this.settings.folderEnabled)this.core.unload();
+    this.overviewPresentation = new QYYOverviewPresentation(this);
     this.sync = new SyncAssistant(this);
     this.conflicts = new ConflictFolders(this);
     this.trash = new SyncedTrash(this);
@@ -38,6 +39,7 @@ class FolderNotesHelper extends Plugin {
     }));
     this.app.workspace.onLayoutReady(() => {
       if (this.disposed) return;
+      this.overviewPresentation.start();
       this.sync.start();
       this.trash.start();
       this.conflicts.start();
@@ -115,6 +117,7 @@ class FolderNotesHelper extends Plugin {
     await this.persist();
     if(this.settings.enabled&&this.settings.folderEnabled){if(!this.core?._loaded)await this.startEmbeddedCore();}else this.core?.unload();
     await this.scheduleApply();
+    this.overviewPresentation?.refresh();
     this.sync.refresh();
     if(key==='trashEnabled'&&value)this.trash.ready=this.trash.prepare();
     this.trash.refresh();
@@ -173,6 +176,7 @@ class FolderNotesHelper extends Plugin {
   }
   onunload() {
     this.disposed = true;
+    this.overviewPresentation?.dispose();
     this.sync?.dispose();
     this.trash?.dispose();
     this.conflicts?.dispose();
