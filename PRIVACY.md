@@ -19,3 +19,12 @@ The helper itself makes no direct network transfers and has no telemetry or rela
 设置文件保存在插件目录；冲突事务与原件在库内私有备份目录。公开百度同步版排除插件目录及对应私有恢复目录，但不能阻止其他备份工具读取它们。废纸篓与自动清理分别默认关闭，恢复会保护同名文件；卸载不会自动清除已有笔记或云端数据。请保留独立备份，提交问题时不要附上私人笔记、配置和未经检查的日志。
 
 Settings and recovery originals are stored locally in the vault. Other backup tools may copy them independently. Trash and cleanup are separate opt-ins. Uninstalling does not erase existing notes or remote data. Keep backups and do not publish private notes, settings or unreviewed logs.
+
+
+## Paste data / 粘贴数据
+
+The paste-repair module processes text/HTML supplied by a user paste event, or by Power Editor's explicitly invoked paste command. It does not poll or proactively read the system clipboard. It keeps only a bounded temporary in-memory conversion cache, does not log clipboard contents, and makes no network requests or vault scans. Disabling or unloading the helper removes its handlers, styles and runtime method wrappers.
+
+Converted text is inserted into the note. Saving or syncing that note through separately configured services can transmit its contents. HTML image and link destinations remain part of the pasted Markdown; normal Obsidian rendering can load remote images. “Local conversion” does not mean pasted content can never leave the device.
+
+粘贴修复只处理用户这次粘贴或明确执行粘贴命令所提供的数据，不主动读取或轮询系统剪贴板，不记录剪贴板内容，不发送网络请求，不扫描知识库。转换后的内容成为普通笔记；之后保存、同步笔记或显示远程图片时，其他已配置功能可能传输这些内容。关闭插件会还原适配方法和样式。

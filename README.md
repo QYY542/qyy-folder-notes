@@ -91,7 +91,7 @@ npm run build
 npm test
 ```
 
-`project-1114-1738.json` 声明源码和文档源稿。GitHub Actions 对提交构建和测试，版本 tag 验证通过后生成三个安装文件的 Artifact Attestations，再发布同一批文件。下载附件后验证 / Verify downloaded artifacts:
+`project-1114-2349.json` 声明源码和文档源稿。GitHub Actions 对提交构建和测试，版本 tag 验证通过后生成三个安装文件的 Artifact Attestations，再发布同一批文件。下载附件后验证 / Verify downloaded artifacts:
 
 ```sh
 gh attestation verify main.js --repo QYY542/qyy-folder-notes
@@ -130,3 +130,28 @@ The menu hides New folder and New base; file menus also hide the Folder note act
 Conversion requires folder notes stored inside their folders. A same-name destination collision stops conversion without overwriting existing files. Open notes are saved first; a save failure prevents conversion. New notes remain blank and new canvases contain no nodes or edges. This release does not require an update to QYY Baidu Sync 1.3.3.
 
 转换要求文件夹笔记存储于文件夹内；遇到同名目标时停止，避免覆盖。操作前保存打开的笔记，保存失败则不转换。手机长按菜单、保存与展开逻辑经过模拟测试，尚未进行手机实机验证。
+
+
+## Paste-only repair / 粘贴时修复
+
+Version 0.1.5 adds two independent settings, enabled by default under the master helper switch:
+
+- **粘贴时修复公式与 Markdown** — normalize only the incoming paste. Extract TeX from supported KaTeX/MathJax HTML; convert complete `\(...\)` to inline math and mathematical `\[...\]` to display math; repair strong-emphasis whitespace and punctuation boundaries. Avoid double escaping Markdown clipboard text, while preserving images, links and tables in rich HTML.
+- **稳定表格与引用的编辑显示** — keep table-cell editor line height consistent with the table's line-height variable. In Power Editor's WYSIWYG Live Preview, hide quote markers and stabilize hanging indentation. Source mode retains quote markers.
+
+Power Editor is optional. Its paste integration was tested with version 1.62.3 and does not modify its installed files or settings. Without it, the helper uses Obsidian's editor-paste event. Formatting is stored as Markdown and remains usable after disabling the helper. Neither feature depends on QYY Baidu Sync, a network connection or an account.
+
+Only complete, identifiable syntax is repaired. Fenced code, inline code, code insertion contexts, Markdown links and existing dollar-delimited math are protected. Existing notes are not scanned or rewritten. Formula images or visual text without retained TeX cannot be reliably recovered. Ordinary undo can revert a paste.
+
+设置页新增“粘贴时修复公式与 Markdown”“稳定表格与引用的编辑显示”，默认开启且可分别关闭。仅处理这次粘贴：修复公式分隔符、加粗空格与标点边界、Markdown 重复转义，并保留图片、链接和表格。不会扫描修改已有笔记，代码和已有标准公式保持原样。旧错误需要从来源重新复制后粘贴；无 LaTeX 源码的图片公式无法可靠还原。
+
+表格编辑器使用与单元格一致的行距；Power Editor 所见即所得模式下引用的缩进固定。保持用户的正文行距选择。更新后重载插件或重启 Obsidian，手机也需要重新加载。浏览器与手机布局模拟测试不等于 Android/iOS 实机验证，后者尚未完成。
+
+See [recovery and maintenance instructions](docs/PASTE-RECOVERY-1114-2349.md). This public package contains no personal restore profiles, private notes or account settings.
+
+
+## Iconic picker / 图标选择器
+
+With the separately installed Iconic, “紧凑图标选择器” shrinks sparse result lists, replaces the empty placeholder with a search hint, and preserves at least 44 px touch targets on mobile. It changes presentation only: search, selection, icon assignments and installed Iconic files remain under Iconic's control. Disable this setting to restore the original layout. This public package does not bundle Twemoji; emoji graphics depend on your chosen renderer and the operating system.
+
+另行安装 Iconic 后，可开启“紧凑图标选择器”：结果少时不再固定占满六行，无结果时显示搜索提示，手机保持足够大的点按区域。此功能不更改所选图标和 Iconic 配置。公开版未捆绑 Twemoji 图形包。
